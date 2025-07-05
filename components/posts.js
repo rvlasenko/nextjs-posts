@@ -1,18 +1,24 @@
-import { formatDate } from '@/lib/format';
-import LikeButton from './like-icon';
+import { formatDate } from "@/lib/format";
+import LikeButton from "./like-icon";
+import Image from "next/image";
 
 function Post({ post }) {
   return (
     <article className="post">
       <div className="post-image">
-        <img src={post.image} alt={post.title} />
+        <Image
+          src={`https://rvlasenko-nextjs-demo-users-image.s3.amazonaws.com/${post.image}`}
+          alt={post.title}
+          width={100}
+          height={100}
+        />
       </div>
       <div className="post-content">
         <header>
           <div>
             <h2>{post.title}</h2>
             <p>
-              Shared by {post.userFirstName} on{' '}
+              Shared by {post.userFirstName} on{" "}
               <time dateTime={post.createdAt}>
                 {formatDate(post.createdAt)}
               </time>
