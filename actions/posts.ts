@@ -1,7 +1,8 @@
 "use server";
 
-import { storePost } from "@/lib/posts";
+import { storePost, updatePostLikeStatus } from "@/lib/posts";
 import { uploadImage } from "@/lib/s3-upload";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function createPost(prevState: any, formData: FormData) {
@@ -37,5 +38,11 @@ export async function createPost(prevState: any, formData: FormData) {
     userId: 1,
   });
 
+  revalidatePath("/feed");
   redirect("/feed");
+}
+
+export async function togglePostLikeStatus(postId: number) {
+  await updatePostLikeStatus(postId, 2);
+  revalidatePath("/feed");
 }
