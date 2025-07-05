@@ -1,10 +1,15 @@
 import sql from "better-sqlite3";
 
-interface Post {
-  imageUrl: string;
+export interface IPost {
+  id: number;
+  image: string;
   title: string;
   content: string;
-  userId: number;
+  createdAt: string;
+  userFirstName: string;
+  userLastName: string;
+  likes: number;
+  isLiked: boolean;
 }
 
 const db = new sql("posts.db");
@@ -61,7 +66,7 @@ export async function getPosts(maxNumber?: number) {
     limitClause = "LIMIT ?";
   }
 
-  const stmt = db.prepare(`
+  const stmt = db.prepare<[], IPost>(`
     SELECT posts.id, image_url AS image, title, content, created_at AS createdAt, first_name AS userFirstName, last_name AS userLastName, COUNT(likes.post_id) AS likes, EXISTS(SELECT * FROM likes WHERE likes.post_id = posts.id and likes.user_id = 2) AS isLiked
     FROM posts
     INNER JOIN users ON posts.user_id = users.id
@@ -71,10 +76,10 @@ export async function getPosts(maxNumber?: number) {
     ${limitClause}`);
 
   await new Promise((resolve) => setTimeout(resolve, 1000));
-  return maxNumber ? stmt.all(maxNumber) : stmt.all();
+  return stmt.all();
 }
 
-export async function storePost(post: Post) {
+export async function storePost(post) {
   const stmt = db.prepare(`
     INSERT INTO posts (image_url, title, content, user_id)
     VALUES (?, ?, ?, ?)`);
